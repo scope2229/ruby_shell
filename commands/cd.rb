@@ -11,7 +11,7 @@ module Commands
     end
 
     def execute
-      puts "HELLO"
+      # puts "HELLO"
       # shdir = Shell.cd(@path)
       # shdir
     end

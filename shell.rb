@@ -6,6 +6,7 @@ require_relative 'shell_parser'
 require_relative 'transform'
 require_relative 'auto_complete'
 require_relative 'style/format_shell_text'
+require_relative 'commands/history'
 
 ##
 # Entry point for out shell application
@@ -17,12 +18,11 @@ def main
     cmdline = Readline.readline("#{shell_format} ", true)
     break if %w[exit quit q].include?(cmdline)
 
-    Readline::HISTORY.pop if cmdline == ''
-    puts Readline::HISTORY.to_a if cmdline == 'hist'
+    Readline::HISTORY.pop if %w[hist ""].include?(cmdline) # == '' || cmdline == 'hist'
+    # next if cmdline.include?('hist')
+    check_type_of_command(cmdline)
+    # shell_command(cmdline)
 
-    next if cmdline.include?('hist')
-
-    shell_command(cmdline)
   end
 end
 
@@ -38,8 +38,19 @@ def shell_format
   string_format.format_string
 end
 
-def check_type_of_command
-
+def check_type_of_command(cmdline)
+  case cmdline
+  when 'hist'
+    puts create_history.hist
+  when 'clear_hist'
+    create_history.clear_history
+  when 'help'
+    puts 'you asked for help'
+  when "\n"
+    puts ''
+  else
+    shell_command(cmdline)
+  end
 end
 
 def shell_command(cmdline)
@@ -59,6 +70,10 @@ end
 def parse_cmdline(cmdline)
   raw_tree = ShellParser.new.parse(cmdline)
   Transform.new.apply(raw_tree)
+end
+
+def create_history
+  Commands::History.new
 end
 
 main
