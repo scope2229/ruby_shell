@@ -3,11 +3,14 @@
 
 require 'readline'
 
+require_relative 'core/auto_complete'
+require_relative 'core/help'
 require_relative 'core/shell_parser'
 require_relative 'core/transform'
-require_relative 'core/auto_complete'
-require_relative 'style/format_shell_text'
+
 require_relative 'commands/history'
+
+require_relative 'style/format_shell_text'
 
 ##
 # Entry point for out shell application
@@ -43,7 +46,7 @@ def check_type_of_command(cmdline)
   when 'clear_hist'
     create_history.clear_history
   when 'help'
-    ''
+    Core::Help.new
   else
     shell_command(cmdline)
   end
