@@ -2,9 +2,10 @@
 # frozen_string_literal: true
 
 require 'readline'
-require_relative 'shell_parser'
-require_relative 'transform'
-require_relative 'auto_complete'
+
+require_relative 'core/shell_parser'
+require_relative 'core/transform'
+require_relative 'core/auto_complete'
 require_relative 'style/format_shell_text'
 require_relative 'commands/history'
 
@@ -18,11 +19,8 @@ def main
     cmdline = Readline.readline("#{shell_format} ", true)
     break if %w[exit quit q].include?(cmdline)
 
-    Readline::HISTORY.pop if %w[hist ""].include?(cmdline) # == '' || cmdline == 'hist'
-    # next if cmdline.include?('hist')
+    Readline::HISTORY.pop if %W[hist #{''}].include?(cmdline)
     check_type_of_command(cmdline)
-    # shell_command(cmdline)
-
   end
 end
 
@@ -45,9 +43,7 @@ def check_type_of_command(cmdline)
   when 'clear_hist'
     create_history.clear_history
   when 'help'
-    puts 'you asked for help'
-  when "\n"
-    puts ''
+    ''
   else
     shell_command(cmdline)
   end
@@ -64,12 +60,12 @@ def shell_command(cmdline)
 rescue Parslet::ParseFailed
   ''
 rescue Errno::ENOENT
-  puts 'commands does not exist'
+  puts 'Command does not exist'
 end
 
 def parse_cmdline(cmdline)
-  raw_tree = ShellParser.new.parse(cmdline)
-  Transform.new.apply(raw_tree)
+  raw_tree = Core::ShellParser.new.parse(cmdline)
+  Core::Transform.new.apply(raw_tree)
 end
 
 def create_history
