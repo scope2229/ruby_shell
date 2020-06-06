@@ -41,6 +41,7 @@ end
 def check_type_of_command
 
 end
+
 def shell_command(cmdline)
   tree = parse_cmdline(cmdline)
   # here we need to check custom commands
@@ -48,6 +49,11 @@ def shell_command(cmdline)
   pids.each do |pid|
     Process.wait(pid)
   end
+  # rescue from empty user inputs
+rescue Parslet::ParseFailed
+  ''
+rescue Errno::ENOENT
+  puts 'commands does not exist'
 end
 
 def parse_cmdline(cmdline)
@@ -55,7 +61,4 @@ def parse_cmdline(cmdline)
   Transform.new.apply(raw_tree)
 end
 
-def command_history
-
-end
 main
